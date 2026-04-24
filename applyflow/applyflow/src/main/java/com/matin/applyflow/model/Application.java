@@ -20,6 +20,8 @@ public class Application{
 
     private double salary;
 
+    public Application() {}
+
     public Application(String companyName, String jobTitle, double salary) {
         this.companyName = companyName;
         this.jobTitle = jobTitle;
@@ -28,10 +30,6 @@ public class Application{
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getCompanyName() {
