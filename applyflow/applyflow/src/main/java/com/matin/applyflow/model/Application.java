@@ -4,7 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+
+import java.math.BigDecimal;
 
 @Entity
 public class Application{
@@ -13,16 +16,17 @@ public class Application{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
+    @NotBlank
     private String companyName;
 
     private String jobTitle;
 
-    private double salary;
+    @PositiveOrZero
+    private BigDecimal salary;
 
     public Application() {}
 
-    public Application(String companyName, String jobTitle, double salary) {
+    public Application(String companyName, String jobTitle, BigDecimal salary) {
         this.companyName = companyName;
         this.jobTitle = jobTitle;
         this.salary = salary;
@@ -48,11 +52,11 @@ public class Application{
         this.jobTitle = jobTitle;
     }
 
-    public double getSalary() {
+    public BigDecimal getSalary() {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(BigDecimal salary) {
         this.salary = salary;
     }
 }

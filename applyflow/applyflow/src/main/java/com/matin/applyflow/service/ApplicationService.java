@@ -26,4 +26,12 @@ public class ApplicationService {
     public Optional<Application> getApplicationById(Long id){
         return repository.findById(id);
     }
+
+    public boolean existsById(Long id){
+        return repository.existsById(id);
+    }
+
+    public void deleteApplicationById(Long id){
+        repository.deleteById(id);
+    }
 }
