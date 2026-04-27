@@ -1,7 +1,9 @@
 package com.matin.applyflow.service;
 
 import com.matin.applyflow.model.Application;
+import com.matin.applyflow.model.ApplicationStatus;
 import com.matin.applyflow.repository.ApplicationRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +21,11 @@ public class ApplicationService {
         return repository.save(a);
     }
 
-    public List<Application> getAllApplications(){
+    public List<Application> getAll(){
         return repository.findAll();
     }
 
-    public Optional<Application> getApplicationById(Long id){
+    public Optional<Application> getById(Long id){
         return repository.findById(id);
     }
 
@@ -33,5 +35,9 @@ public class ApplicationService {
 
     public void deleteApplicationById(Long id){
         repository.deleteById(id);
+    }
+
+    public List<Application> getByStatus(ApplicationStatus status){
+        return repository.findByStatus(status);
     }
 }

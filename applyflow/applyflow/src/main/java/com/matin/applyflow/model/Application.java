@@ -1,9 +1,6 @@
 package com.matin.applyflow.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -24,12 +21,16 @@ public class Application{
     @PositiveOrZero
     private BigDecimal salary;
 
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
+
     public Application() {}
 
     public Application(String companyName, String jobTitle, BigDecimal salary) {
         this.companyName = companyName;
         this.jobTitle = jobTitle;
         this.salary = salary;
+        this.status = ApplicationStatus.APPLIED;
     }
 
     public long getId() {
@@ -58,5 +59,13 @@ public class Application{
 
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,7 @@
 package com.matin.applyflow.controller;
 
 import com.matin.applyflow.model.Application;
+import com.matin.applyflow.model.ApplicationStatus;
 import com.matin.applyflow.repository.ApplicationRepository;
 import com.matin.applyflow.service.ApplicationService;
 import jakarta.validation.Valid;
@@ -20,7 +21,7 @@ public class ApplicationController {
 
     @GetMapping("/applications")
     public ResponseEntity<List<Application>> getAll() {
-        return ResponseEntity.ok(this.applicationService.getAllApplications());
+        return ResponseEntity.ok(this.applicationService.getAll());
     }
 
     @PostMapping("/applications")
@@ -31,11 +32,12 @@ public class ApplicationController {
 
     @PutMapping("/applications/{id}")
     public ResponseEntity<Application> update(@PathVariable Long id, @Valid @RequestBody Application updated){
-        return applicationService.getApplicationById(id).map(existing -> {
+        return applicationService.getById(id).map(existing -> {
             existing.setCompanyName(updated.getCompanyName());
             existing.setJobTitle(updated.getJobTitle());
             if(updated.getSalary() != null)
                 existing.setSalary(updated.getSalary());
+            existing.setStatus(updated.getStatus());
 
             applicationService.saveApplication(existing);
             return ResponseEntity.ok(existing);
@@ -48,5 +50,10 @@ public class ApplicationController {
             return ResponseEntity.notFound().build();
         applicationService.deleteApplicationById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/applications/status/{status}")
+    public ResponseEntity<List<Application>> getByStatus(@PathVariable ApplicationStatus status){
+        return ResponseEntity.status(201).body(applicationService.getByStatus(status));
     }
 }
