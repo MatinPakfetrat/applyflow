@@ -3,6 +3,8 @@ package com.matin.applyflow.service;
 import com.matin.applyflow.model.Application;
 import com.matin.applyflow.model.ApplicationStatus;
 import com.matin.applyflow.repository.ApplicationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,16 @@ public class ApplicationService {
         return repository.save(a);
     }
 
-    public List<Application> getAll(){
-        return repository.findAll();
+    public Page<Application> getApplications(ApplicationStatus status, String company, Pageable pageable) {
+        if (status != null && company != null) {
+            return repository.findByStatusAndCompanyNameContaining(status, company, pageable);
+        } else if (status != null) {
+            return repository.findByStatus(status, pageable);
+        } else if (company != null) {
+            return repository.findByCompanyName(company, pageable);
+        }
+        return repository.findAll(pageable);
     }
-
     public Optional<Application> getById(Long id){
         return repository.findById(id);
     }
@@ -37,7 +45,7 @@ public class ApplicationService {
         repository.deleteById(id);
     }
 
-    public List<Application> getByStatus(ApplicationStatus status){
-        return repository.findByStatus(status);
+    public Page<Application> getAllApplications(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }

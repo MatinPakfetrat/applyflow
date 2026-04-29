@@ -2,10 +2,22 @@ package com.matin.applyflow.repository;
 
 import com.matin.applyflow.model.Application;
 import com.matin.applyflow.model.ApplicationStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application, Long>{
-    List<Application> findByStatus(ApplicationStatus status);
+    Page<Application> findByStatus(ApplicationStatus status, Pageable pageable);
+
+    Page<Application> findByStatusAndCompanyNameContaining(
+            ApplicationStatus status,
+            String company,
+            Pageable pageable
+    );
+
+    Page<Application> findByCompanyName(String company, Pageable pageable);
+
+    Page<Application> findAll(Pageable pageable);
 }

@@ -5,6 +5,8 @@ import com.matin.applyflow.model.ApplicationStatus;
 import com.matin.applyflow.repository.ApplicationRepository;
 import com.matin.applyflow.service.ApplicationService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,12 @@ public class ApplicationController {
     }
 
     @GetMapping("/applications")
-    public ResponseEntity<List<Application>> getAll() {
-        return ResponseEntity.ok(this.applicationService.getAll());
+    public ResponseEntity<Page<Application>> getApplications(
+            @RequestParam(required = false) ApplicationStatus status,
+            @RequestParam(required = false) String company,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(applicationService.getApplications(status, company, pageable));
     }
 
     @PostMapping("/applications")
@@ -50,10 +56,5 @@ public class ApplicationController {
             return ResponseEntity.notFound().build();
         applicationService.deleteApplicationById(id);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/applications/status/{status}")
-    public ResponseEntity<List<Application>> getByStatus(@PathVariable ApplicationStatus status){
-        return ResponseEntity.status(201).body(applicationService.getByStatus(status));
     }
 }
