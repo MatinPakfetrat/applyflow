@@ -11,7 +11,7 @@ import java.util.List;
 public interface ApplicationRepository extends JpaRepository<Application, Long>{
     Page<Application> findByStatus(ApplicationStatus status, Pageable pageable);
 
-    Page<Application> findByStatusAndCompanyNameContaining(
+    Page<Application> findByStatusAndCompanyNameContainingIgnoreCase(
             ApplicationStatus status,
             String company,
             Pageable pageable

@@ -25,7 +25,7 @@ public class ApplicationService {
 
     public Page<Application> getApplications(ApplicationStatus status, String company, Pageable pageable) {
         if (status != null && company != null) {
-            return repository.findByStatusAndCompanyNameContaining(status, company, pageable);
+            return repository.findByStatusAndCompanyNameContainingIgnoreCase(status, company, pageable);
         } else if (status != null) {
             return repository.findByStatus(status, pageable);
         } else if (company != null) {

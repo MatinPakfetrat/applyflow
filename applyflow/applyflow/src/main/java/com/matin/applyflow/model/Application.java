@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 public class Application{
@@ -13,16 +14,19 @@ public class Application{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "Company name cannot be empty")
     private String companyName;
 
     private String jobTitle;
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "Salary cannot be negative")
     private BigDecimal salary;
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public Application() {}
 
@@ -67,5 +71,23 @@ public class Application{
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
