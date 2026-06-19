@@ -14,12 +14,13 @@ public class Application{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Company name cannot be empty")
+    @NotBlank(message = "Company name is required")
     private String companyName;
 
+    @NotBlank(message = "Job title is required")
     private String jobTitle;
 
-    @PositiveOrZero(message = "Salary cannot be negative")
+    @PositiveOrZero(message = "Salary must be zero or positive")
     private BigDecimal salary;
 
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,7 @@
 package com.matin.applyflow.controller;
 
+import com.matin.applyflow.dto.ApplicationRequest;
+import com.matin.applyflow.dto.ApplicationResponse;
 import com.matin.applyflow.model.Application;
 import com.matin.applyflow.model.ApplicationStatus;
 import com.matin.applyflow.repository.ApplicationRepository;
@@ -22,7 +24,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/applications")
-    public ResponseEntity<Page<Application>> getApplications(
+    public ResponseEntity<Page<ApplicationResponse>> getApplications(
             @RequestParam(required = false) ApplicationStatus status,
             @RequestParam(required = false) String company,
             Pageable pageable
@@ -31,23 +33,15 @@ public class ApplicationController {
     }
 
     @PostMapping("/applications")
-    public ResponseEntity<Application> apply(@Valid @RequestBody Application a){
-        Application saved = applicationService.saveApplication(a);
+    public ResponseEntity<ApplicationResponse> apply(@Valid @RequestBody ApplicationRequest a){
+        ApplicationResponse saved = applicationService.createApplication(a);
         return ResponseEntity.status(201).body(saved);
     }
 
     @PutMapping("/applications/{id}")
-    public ResponseEntity<Application> update(@PathVariable Long id, @Valid @RequestBody Application updated){
-        return applicationService.getById(id).map(existing -> {
-            existing.setCompanyName(updated.getCompanyName());
-            existing.setJobTitle(updated.getJobTitle());
-            if(updated.getSalary() != null)
-                existing.setSalary(updated.getSalary());
-            existing.setStatus(updated.getStatus());
-
-            applicationService.saveApplication(existing);
-            return ResponseEntity.ok(existing);
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApplicationResponse> update(@PathVariable Long id, @Valid @RequestBody ApplicationRequest request){
+        ApplicationResponse response = applicationService.updateApplication(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/applications/{id}")
