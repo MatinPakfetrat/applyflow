@@ -2,9 +2,7 @@ package com.matin.applyflow.controller;
 
 import com.matin.applyflow.dto.ApplicationRequest;
 import com.matin.applyflow.dto.ApplicationResponse;
-import com.matin.applyflow.model.Application;
 import com.matin.applyflow.model.ApplicationStatus;
-import com.matin.applyflow.repository.ApplicationRepository;
 import com.matin.applyflow.service.ApplicationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

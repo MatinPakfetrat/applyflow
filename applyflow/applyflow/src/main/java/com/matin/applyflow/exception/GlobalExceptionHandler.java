@@ -1,93 +1,78 @@
 package com.matin.applyflow.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.matin.applyflow.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneral(Exception e){
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Something went wrong");
-    }
-
+    // @Valid failures on @RequestBody — collects ALL field violations at once
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex){
-        return ResponseEntity
-                .badRequest()
-                .body("Validation failed: " + ex.getBindingResult().getFieldError().getDefaultMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> handleEnumError(MethodArgumentTypeMismatchException ex) {
-
-        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
-
-            Object[] enumValues = ex.getRequiredType().getEnumConstants();
-
-            return ResponseEntity.badRequest().body(
-                    Map.of(
-                            "error", "Invalid value for parameter: " + ex.getName(),
-                            "invalidValue", ex.getValue(),
-                            "validValues", enumValues
-                    )
-            );
-        }
-
-        return ResponseEntity.badRequest().body("Invalid request parameter");
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleJsonErrors(HttpMessageNotReadableException ex) {
-        Throwable cause = ex;
-
-        while (cause != null) {
-            if (cause instanceof InvalidFormatException ife) {
-                Class<?> targetType = ife.getTargetType();
-
-                if (targetType != null && targetType.isEnum()) {
-                    Object[] enumValues = targetType.getEnumConstants();
-                    String field = ife.getPath().stream()
-                            .map(ref -> ref.getFieldName())
-                            .filter(name -> name != null && !name.isBlank())
-                            .reduce((first, second) -> first + "." + second)
-                            .orElse("unknown");
-
-                    return ResponseEntity.badRequest().body(
-                            Map.of(
-                                    "error", "Invalid enum value",
-                                    "field", field,
-                                    "invalidValue", ife.getValue(),
-                                    "validValues", List.of(enumValues)
-                            )
-                    );
-                }
-            }
-
-            cause = cause.getCause();
-        }
-
-        Throwable rootCause = ex.getMostSpecificCause();
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex){
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(field -> field.getField() + ": " + field.getDefaultMessage())
+                .collect(Collectors.toList());
 
         return ResponseEntity.badRequest().body(
-                Map.of(
-                        "error", "Malformed JSON request",
-                        "details", rootCause.getMessage()
-                )
+                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors)
+        );
+    }
+
+    // Invalid enum value in a query param — e.g. ?status=BLAH
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex){
+        String detail = "";
+        if(ex.getRequiredType() != null && ex.getRequiredType().isEnum()){
+            detail = " Valid values: " + Arrays.toString(ex.getRequiredType().getEnumConstants());
+        }
+
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(HttpStatus.BAD_REQUEST.value()
+                        , "Invalid value '" + ex.getValue() + "' for parameter '" + ex.getName() + "'." + detail)
+        );
+    }
+
+    // Invalid enum value in JSON request body — e.g. { "status": "BLAH" }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex){
+        String message = "Malformed request body";
+
+        if(ex.getCause() instanceof InvalidFormatException ife && ife.getTargetType().isEnum()){
+            message = "Invalid value '" + ife.getValue() + "'. Valid values: "
+                    + Arrays.toString(ife.getTargetType().getEnumConstants());
+        }
+
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message)
+        );
+    }
+
+    // Custom 404
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage())
+        );
+    }
+
+    // Catch-all - intentionally vague, never leak internals to the client
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex){
+        return ResponseEntity.internalServerError().body(
+                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred")
         );
     }
 }
