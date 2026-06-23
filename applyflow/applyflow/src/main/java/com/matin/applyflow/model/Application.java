@@ -29,6 +29,10 @@ public class Application{
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Application() {}
 
     public Application(String companyName, String jobTitle, BigDecimal salary) {
@@ -91,4 +95,8 @@ public class Application{
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
 }
