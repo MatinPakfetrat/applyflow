@@ -3,7 +3,6 @@ package com.matin.applyflow.controller;
 import com.matin.applyflow.exception.GlobalExceptionHandler;
 import com.matin.applyflow.service.ApplicationService;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -21,7 +20,6 @@ class ApplicationControllerJsonErrorTest {
         ApplicationController controller = new ApplicationController(applicationService);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
-                .setMessageConverters(new MappingJackson2HttpMessageConverter())
                 .build();
 
         mockMvc.perform(post("/api/applications")
