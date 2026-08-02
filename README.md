@@ -11,6 +11,12 @@ A backend-focused job application tracker built with Spring Boot, featuring JWT 
 
 ApplyFlow is a REST API for tracking job applications — company, role, salary, and status (Applied, Interview, Rejected, Offer) — scoped to individual authenticated users. It was built as a backend-first portfolio project, with a deliberate focus on production-realistic practices: layered architecture, DTO-based API boundaries, structured error handling, ownership-based authorization, and a real test suite rather than manual-only verification.
 
+## Live Demo
+
+The API is deployed at: `https://applyflow.onrender.com`
+
+> **Note:** This runs on Render's free tier, which spins down after periods of inactivity. The first request may take 30–60 seconds to respond while the service wakes up — this is expected, not a bug.
+
 ## Features
 
 **Authentication & Security**
@@ -209,7 +215,7 @@ src/main/java/com/matin/applyflow/
 - [x] Unit & integration testing
 - [x] Logging
 - [x] README
-- [ ] Deployment
+- [x] Deployment
 - [ ] Docker
 
 ## License
