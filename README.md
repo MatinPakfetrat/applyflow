@@ -146,6 +146,29 @@ Every error — validation failures, not-found, auth failures, unexpected except
 
 ## Getting Started
 
+## Running with Docker (Recommended)
+
+If you have Docker installed, this is the fastest way to run the full stack — no local Java, Maven, or PostgreSQL installation required.
+
+### Prerequisites
+- Docker Desktop
+
+### Setup
+
+\`\`\`bash
+git clone https://github.com/<your-username>/applyflow.git
+cd applyflow
+cp .env.example .env
+\`\`\`
+
+Edit `.env` with your own values, then:
+
+\`\`\`bash
+docker compose up --build
+\`\`\`
+
+The API is available at `http://localhost:8080/api`.
+
 ### Prerequisites
 - Java 17+
 - Maven 3.8+
