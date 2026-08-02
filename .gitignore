@@ -5,7 +5,6 @@ target/
 !**/src/test/**/target/
 
 ### Local config — contains real secrets, never commit ###
-src/main/resources/application.properties
 logs/
 .env
 
