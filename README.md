@@ -13,7 +13,7 @@ ApplyFlow is a REST API for tracking job applications — company, role, salary,
 
 ## Live Demo
 
-The API is deployed at: `https://applyflow.onrender.com`
+The API is deployed at: `https://applyflow-qhqw.onrender.com`
 
 > **Note:** This runs on Render's free tier, which spins down after periods of inactivity. The first request may take 30–60 seconds to respond while the service wakes up — this is expected, not a bug.
 
