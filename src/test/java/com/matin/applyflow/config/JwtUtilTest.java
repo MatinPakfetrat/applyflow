@@ -29,22 +29,22 @@ class JwtUtilTest {
     }
 
     @Test
-    void generateToken_thenExtractUsername_returnsOriginalUsername() {
-        String token = jwtUtil.generateToken(userDetails);
+    void generateAccessToken_thenExtractUsername_returnsOriginalUsername() {
+        String token = jwtUtil.generateAccessToken(userDetails);
 
         assertThat(jwtUtil.extractUsername(token)).isEqualTo("matin");
     }
 
     @Test
     void isTokenValid_withMatchingUser_returnsTrue() {
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateAccessToken(userDetails);
 
         assertThat(jwtUtil.isTokenValid(token, userDetails)).isTrue();
     }
 
     @Test
     void isTokenValid_withDifferentUser_returnsFalse() {
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateAccessToken(userDetails);
         UserDetails differentUser = new User("someone-else", "password", List.of());
 
         assertThat(jwtUtil.isTokenValid(token, differentUser)).isFalse();

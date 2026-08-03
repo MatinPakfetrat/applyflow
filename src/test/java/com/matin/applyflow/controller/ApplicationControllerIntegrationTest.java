@@ -46,7 +46,7 @@ public class ApplicationControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andReturn().getResponse().getContentAsString();
 
-        token = objectMapper.readTree(response).get("token").asString();
+        token = objectMapper.readTree(response).get("accessToken").asText();
     }
 
     @Test
@@ -90,5 +90,59 @@ public class ApplicationControllerIntegrationTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].companyName").value("Amazon"));
+    }
+
+    @Test
+    void refresh_withValidToken_returnsNewTokenPair() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("matin");
+        request.setEmail("matin@email.com");
+        request.setPassword("secret123");
+
+        String response = mockMvc.perform(post("/api/auth/register")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readTree(response).get("refreshToken").asString();
+
+        String refreshBody = objectMapper.writeValueAsString(
+                java.util.Map.of("refreshToken", refreshToken));
+
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType("application/json")
+                        .content(refreshBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken", notNullValue()))
+                .andExpect(jsonPath("$.refreshToken", notNullValue()));
+    }
+
+    @Test
+    void refresh_withAlreadyUsedToken_returns401() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("matin");
+        request.setEmail("matin@email.com");
+        request.setPassword("secret123");
+
+        String response = mockMvc.perform(post("/api/auth/register")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readTree(response).get("refreshToken").asText();
+        String refreshBody = objectMapper.writeValueAsString(
+                java.util.Map.of("refreshToken", refreshToken));
+
+        // First use succeeds and rotates the token
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType("application/json")
+                        .content(refreshBody))
+                .andExpect(status().isOk());
+
+        // Reusing the same (now-consumed) token should fail
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType("application/json")
+                        .content(refreshBody))
+                .andExpect(status().isUnauthorized());
     }
 }

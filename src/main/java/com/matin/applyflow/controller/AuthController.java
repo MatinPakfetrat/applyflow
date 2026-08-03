@@ -2,6 +2,7 @@ package com.matin.applyflow.controller;
 
 import com.matin.applyflow.dto.AuthResponse;
 import com.matin.applyflow.dto.LoginRequest;
+import com.matin.applyflow.dto.RefreshTokenRequest;
 import com.matin.applyflow.dto.RegisterRequest;
 import com.matin.applyflow.service.UserService;
 import jakarta.validation.Valid;
@@ -30,5 +31,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request){
         return ResponseEntity.ok(userService.login(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(userService.refresh(request.getRefreshToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
+        userService.logout(request.getRefreshToken());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -27,7 +27,7 @@ public class JwtUtil {
     }
 
     // Builds and signs a new token with the username as the subject
-    public String generateToken(UserDetails userDetails){
+    public String generateAccessToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())

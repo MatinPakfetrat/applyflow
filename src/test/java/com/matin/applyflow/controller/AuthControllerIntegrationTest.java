@@ -35,7 +35,8 @@ class AuthControllerIntegrationTest {
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.token", notNullValue()));
+                .andExpect(jsonPath("$.accessToken", notNullValue()))
+                .andExpect(jsonPath("$.refreshToken", notNullValue()));
     }
 
     @Test

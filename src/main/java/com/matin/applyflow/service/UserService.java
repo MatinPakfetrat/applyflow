@@ -5,18 +5,18 @@ import com.matin.applyflow.dto.AuthResponse;
 import com.matin.applyflow.dto.LoginRequest;
 import com.matin.applyflow.dto.RegisterRequest;
 import com.matin.applyflow.exception.UserAlreadyExistsException;
+import com.matin.applyflow.model.RefreshToken;
 import com.matin.applyflow.model.User;
 import com.matin.applyflow.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -26,13 +26,16 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil,
+                       RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class UserService implements UserDetailsService {
         User saved = userRepository.save(user);
         logger.info("New user registered: {}", saved.getUsername());
 
-        return new AuthResponse(jwtUtil.generateToken(saved));
+        return issueTokens(saved);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -75,6 +78,25 @@ public class UserService implements UserDetailsService {
         }
 
         logger.info("User logged in successfully: {}", user.getUsername());
-        return new AuthResponse(jwtUtil.generateToken(user));
+        return issueTokens(user);
+    }
+
+    @Transactional
+    public AuthResponse refresh(String refreshTokenValue) {
+        RefreshToken oldToken = refreshTokenService.verifyAndConsume(refreshTokenValue);
+        User user = oldToken.getUser();
+        logger.info("Access token refreshed for user: {}", user.getUsername());
+        return issueTokens(user);
+    }
+
+    public void logout(String refreshTokenValue) {
+        refreshTokenService.revoke(refreshTokenValue);
+        logger.info("Refresh token revoked (logout)");
+    }
+
+    private AuthResponse issueTokens(User user) {
+        String accessToken = jwtUtil.generateAccessToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        return new AuthResponse(accessToken, refreshToken.getToken());
     }
 }
