@@ -210,6 +210,19 @@ mvn spring-boot:run
 
 The API is now available at `http://localhost:8080/api`.
 
+## Frontend
+
+A React frontend lives in \`frontend/\`. To run it locally:
+
+\`\`\`bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+\`\`\`
+
+Requires the backend running separately (see above).
+
 ## Running Tests
 
 ```bash
