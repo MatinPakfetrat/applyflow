@@ -83,8 +83,8 @@ export default function ApplicationModal({ isOpen, onClose, onSubmit, initialDat
             <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-              {isSubmitting ? 'Saving...' : 'Save'}
+            <button type="submit" disabled={isSubmitting} className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink/90 disabled:opacity-50">
+              {isSubmitting ? 'Saving...' : initialData ? 'Save changes' : 'Add application'}
             </button>
           </div>
         </form>

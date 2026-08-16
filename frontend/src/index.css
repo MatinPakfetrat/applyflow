@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+  --color-ink: #18181B;
+  --color-canvas: #FAFAF9;
+  --color-hairline: #E7E5E4;
+  --color-muted: #78716C;
+
+  --color-status-applied: #2563EB;
+  --color-status-interview: #CA8A04;
+  --color-status-offer: #059669;
+  --color-status-rejected: #DC2626;
+}
