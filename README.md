@@ -14,10 +14,14 @@ ApplyFlow is a job application tracker — company, role, salary, and status (Ap
 
 ## Live Demo
 
-**App:** `https://applyflow-frontend-p4qm.onrender.com`
-**API:** `https://applyflow-qhqw.onrender.com/api`
+**App:** https://applyflow-frontend-p4qm.onrender.com
+**API:** https://applyflow-qhqw.onrender.com/api
 
-> Both run on free-tier hosting. The API spins down after inactivity — the first action after idle time (login, loading applications) may take 30–60 seconds while it wakes up. The app itself loads instantly regardless.
+**Demo account (sample data, safe to explore):**
+- Username: demo
+- Password: DemoPass123!
+
+> Both run on free-tier hosting. The API spins down after inactivity, so the first login after idle time may take 30-60 seconds while it wakes up. The app itself loads instantly.
 
 ## Features
 
